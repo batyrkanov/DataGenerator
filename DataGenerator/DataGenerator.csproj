@@ -55,5 +55,11 @@
     <Content Include="Files\patronymic.txt" />
     <Content Include="Files\surnames.txt" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DataGenerator.Logic\DataGenerator.Logic.csproj">
+      <Project>{17a67bcf-fc2b-4cab-8a45-6aeb190fcf8f}</Project>
+      <Name>DataGenerator.Logic</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

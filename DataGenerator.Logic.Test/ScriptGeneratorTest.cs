@@ -12,11 +12,12 @@ namespace DataGenerator.Logic.Test
     [TestFixture]
     class ScriptGeneratorTest
     {
-        private IScriptGenerator _generator;
+        private ScriptGenerator _generator;
         [SetUp]
         public void Init()
         {
-            _generator = null;
+            IRepository repository = new RepositoryMock();
+            _generator = new ScriptGenerator(repository);
         }
 
         [Test]
@@ -57,6 +58,7 @@ namespace DataGenerator.Logic.Test
 
 
         [Test]
+        [Repeat(10000)]
         public void GenerateUser_PasswordRequired()
         {
             UserEntity entity = _generator.GenerateUser();
@@ -76,19 +78,20 @@ namespace DataGenerator.Logic.Test
 
 
         [Test]
+        [Repeat(10000)]
         public void GenerateUser_RegistrationDatePeriod()
         {
             UserEntity entity = _generator.GenerateUser();
             DateTime registrationDate = entity.RegistrationDate;
 
-            Assert.That(registrationDate, Is.InRange(new DateTime(2010, 1, 1), new DateTime(2017, 1, 29)));
+            Assert.That(registrationDate, Is.InRange(new DateTime(2010, 1, 1), new DateTime(2016, 2, 29)));
         }
 
         [Test]
         public void GenerateUser_GetValueLine()
         {
-            UserEntity user = new UserEntity() { Name = "AD", Surname = "ADad", Patronymic = "ADasd", Login = "ADasd@gmail.com", Password = "AASDASDSDD", Email = "ADd@gmail.com", RegistrationDate = new DateTime(2015, 1, 1) };
-            const string EXPECTED_RESULT = @"VALUES ('AD', 'ADad', 'ADasd', 'ADasd@gmail.com', 'AASDASDSDD', 'ADd@gmail.com', '20150101')";
+            UserEntity user = new UserEntity() { Name = "Вася", Surname = "Васильев", Patronymic = "Васильевич", Login = "vasya", Password = "4566", Email = "vasya@test.ru", RegistrationDate = new DateTime(2015, 01, 01) };
+            const string EXPECTED_RESULT = @"VALUES ('Вася', 'Васильев', 'Васильевич', 'vasya', '4566', 'vasya@test.ru', '20150101')";
 
             string result = _generator.GetValueLine(user);
 
@@ -103,6 +106,18 @@ namespace DataGenerator.Logic.Test
             string result = _generator.GenInsertLine();
 
             Assert.That(result, Is.EqualTo(EXPECTED_RESULT));
+        }
+
+        [Test]
+        public void MergeLines_Test()
+        {
+            const string INSERT_LINE = "INSERT LINE";
+            string[] valueLines = { "VALUE LINE 1", "VALUE LINE 2" };
+            string expectedResult = $"INSERT LINE{Environment.NewLine}VALUE LINE 1{Environment.NewLine},VALUE LINE 2{Environment.NewLine}";
+
+            string result = _generator.MergeLines(valueLines, INSERT_LINE);
+
+            Assert.That(result, Is.EqualTo(expectedResult));
         }
     }
 }

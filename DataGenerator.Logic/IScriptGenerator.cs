@@ -11,7 +11,7 @@ namespace DataGenerator.Logic
     {
         UserEntity GenerateUser();
         string GetValueLine(UserEntity entity);
-        string GenInsertLine();
+        string GetInsertLine();
         string CreateScript(int entityCount); 
     }
 }
